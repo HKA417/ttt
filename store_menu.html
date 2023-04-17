@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Store Menu</title>
+</head>
+<body>
+    <h2>My Store</h2>
+
+    <div id="inventory">
+        <h3>Store Inventory</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Buy</th>
+                </tr>
+            </thead>
+            <tbody id="inventory_items">
+            </tbody>
+        </table>
+
+        <button onclick="showAddItemForm()">Add Item</button>
+    </div>
+
+    <div id="add_item_form" style="display: none;">
+        <h3>Add Item to Inventory</h3>
+        <form onsubmit="addItem()">
+            <label for="item_name">Item Name:</label>
+            <input type="text" id="item_name" name="item_name" required>
+            <br>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required>
+            <br>
+            <button type="submit">Add Item</button>
+            <button type="button" onclick="hideAddItemForm()">Cancel</button>
+        </form>
+    </div>
+
+    <div id="sell_items">
+        <h3>Sell Items</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Sell</th>
+                </tr>
+            </thead>
+            <tbody id="sell_items_list">
+            </tbody>
+        </table>
+    </div>
+    <head>
+        <link rel="stylesheet" href="store_menu.css">
+      </head>
+      
+    <script>
+        // Send a message to the server to close the store menu
+        function closeStoreMenu() {
+            $.post('http://myStore/closeStoreMenu', JSON.stringify({}));
+        }
+
+        // Send a message to the server to buy an item from the store
+        function buyItem(itemName, price) {
+            let quantity = parseInt(prompt("How many would you like to buy?", "1"));
+            if (quantity <= 0 || isNaN(quantity)) {
+                alert("Invalid quantity.");
+                return;
+            }
+            $.post('http://myStore/buyItem', JSON.stringify({itemName, price, quantity}));
+        }
+
+        // Send a message to the server to add an item to the store's inventory
+        function addItem() {
+            let itemName = document.getElementById('item_name').value;
+            let quantity = parseInt(document.getElementById('quantity').value);
+            if (quantity <= 0 || isNaN(quantity)) {
+                alert("Invalid quantity.");
+                return;
+            }
+            $.post('http://myStore/addInventoryItem', JSON.stringify({itemName, quantity}));
+            hideAddItemForm();
+        }
+
+        // Send a message to the server to remove an item from the store's inventory
+        function removeItem(itemName) {
+            $.post('http://myStore/removeInventoryItem', JSON.stringify({itemName}));
+        }
+
+       
